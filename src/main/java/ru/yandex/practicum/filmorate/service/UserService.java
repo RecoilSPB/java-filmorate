@@ -14,7 +14,7 @@ public class UserService implements IBaseService<User> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<User> users = new ArrayList<>();
-    private int id;
+    private Long id = 0L;
 
 
     @Override
@@ -48,7 +48,7 @@ public class UserService implements IBaseService<User> {
         return users;
     }
 
-    private int getNextId(){
+    private Long getNextId(){
         this.id++;
         return this.id;
     }

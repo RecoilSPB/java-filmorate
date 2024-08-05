@@ -2,12 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import ru.yandex.practicum.filmorate.validator.ValidReleaseDate;
 
 import java.time.LocalDate;
 
 @Data
 public class Film {
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Название не может быть пустым")
     private String name;
@@ -17,8 +18,9 @@ public class Film {
 
     @NotNull(message = "Дата релиза не может быть пустой")
     @PastOrPresent(message = "Дата релиза не может быть в будущем")
+    @ValidReleaseDate
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
-    private int duration;
+    private Long duration;
 }
