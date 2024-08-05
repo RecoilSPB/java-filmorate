@@ -6,10 +6,6 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 public class User {
     private int id;
 
@@ -24,6 +20,14 @@ public class User {
     private String name;
 
     @NotNull(message = "Дата рождения не может быть пустой")
-    @Past(message = "Дата рождения не может быть в будущем")
+    @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
+
+    public void setName(String name) {
+        if (name == null || name.isEmpty()) {
+            this.name = this.login;
+        } else {
+            this.name = name;
+        }
+    }
 }
