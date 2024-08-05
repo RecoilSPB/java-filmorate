@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id,@Valid @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody User updatedUser) {
         User user = userService.update(id, updatedUser);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

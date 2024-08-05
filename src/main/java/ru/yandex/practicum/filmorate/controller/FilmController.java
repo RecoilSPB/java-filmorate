@@ -26,7 +26,7 @@ public class FilmController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Film> updateFilm(@PathVariable int id,@Valid @RequestBody Film updatedFilm) {
+    public ResponseEntity<Film> updateFilm(@PathVariable int id, @Valid @RequestBody Film updatedFilm) {
         Film film = filmService.update(id, updatedFilm);
         if (film == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

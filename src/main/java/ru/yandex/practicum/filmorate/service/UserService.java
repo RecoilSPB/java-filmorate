@@ -48,7 +48,7 @@ public class UserService implements IBaseService<User> {
         return users;
     }
 
-    private Long getNextId(){
+    private Long getNextId() {
         this.id++;
         return this.id;
     }
