@@ -26,13 +26,13 @@ public class FilmService implements IBaseService<Film> {
     }
 
     @Override
-    public Film update(int id, Film dto) {
+    public Film update(Film updateFilm) {
         for (Film film : films) {
-            if (film.getId() == id) {
-                film.setName(dto.getName());
-                film.setDescription(dto.getDescription());
-                film.setReleaseDate(dto.getReleaseDate());
-                film.setDuration(dto.getDuration());
+            if (film.getId() == updateFilm.getId()) {
+                film.setName(updateFilm.getName());
+                film.setDescription(updateFilm.getDescription());
+                film.setReleaseDate(updateFilm.getReleaseDate());
+                film.setDuration(updateFilm.getDuration());
                 return film;
             }
         }

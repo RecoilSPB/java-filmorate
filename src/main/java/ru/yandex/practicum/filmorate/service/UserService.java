@@ -30,13 +30,13 @@ public class UserService implements IBaseService<User> {
     }
 
     @Override
-    public User update(int id, User dto) {
+    public User update(User updateUser) {
         for (User user : users) {
-            if (user.getId() == id) {
-                user.setEmail(dto.getEmail());
-                user.setLogin(dto.getLogin());
-                user.setName(dto.getName().isEmpty() ? dto.getLogin() : dto.getName());
-                user.setBirthday(dto.getBirthday());
+            if (user.getId() == updateUser.getId()) {
+                user.setEmail(updateUser.getEmail());
+                user.setLogin(updateUser.getLogin());
+                user.setName(updateUser.getName().isEmpty() ? updateUser.getLogin() : updateUser.getName());
+                user.setBirthday(updateUser.getBirthday());
                 return user;
             }
         }

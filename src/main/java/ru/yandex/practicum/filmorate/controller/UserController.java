@@ -1,8 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -13,6 +16,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -25,9 +29,24 @@ public class UserController {
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable int id, @Valid @RequestBody User updatedUser) {
-        User user = userService.update(id, updatedUser);
+    @PutMapping
+    public ResponseEntity<User> updateUser(@Valid @RequestBody(required = false) User updatedUser,
+                                           BindingResult bindingResult) {
+        if (bindingResult.hasFieldErrors()) {
+            bindingResult.getFieldErrors()
+                    .forEach(e ->
+                            log.error("film update: field: {}, rejected value: {}", e.getField(), e.getRejectedValue()));
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if (updatedUser == null) {
+            log.error("user update: user is null");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        if (updatedUser.getId() == null) {
+            log.error("user update: user id is null");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        User user = userService.update(updatedUser);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
