@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -24,20 +24,13 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.add(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<User> updateUser(@Valid @RequestBody(required = false) User updatedUser,
-                                           BindingResult bindingResult) {
-        if (bindingResult.hasFieldErrors()) {
-            bindingResult.getFieldErrors()
-                    .forEach(e ->
-                            log.error("film update: field: {}, rejected value: {}", e.getField(), e.getRejectedValue()));
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> updateUser(@Valid @RequestBody User updatedUser) {
         if (updatedUser == null) {
             log.error("user update: user is null");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -54,8 +47,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<?> getAllUsers() {
         List<User> users = userService.getAll();
+        if (users.isEmpty()) {
+            String msg = "users not found";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse(null, null, msg);
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.ErrorResponse;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -24,38 +24,44 @@ public class FilmController {
     }
 
     @PostMapping
-    public ResponseEntity<Film> createFilm(@Valid @RequestBody Film film) {
+    public ResponseEntity<?> createFilm(@Valid @RequestBody Film film) {
         Film createdFilm = filmService.add(film);
         return new ResponseEntity<>(createdFilm, HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<Film> updateFilm(@Valid @RequestBody(required = false) Film updatedFilm,
-                                           BindingResult bindingResult) {
-        if (bindingResult.hasFieldErrors()) {
-            bindingResult.getFieldErrors()
-                    .forEach(e ->
-                            log.error("film update: field: {}, rejected value: {}", e.getField(), e.getRejectedValue()));
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> updateFilm(@Valid @RequestBody Film updatedFilm) {
         if (updatedFilm == null) {
-            log.error("film update: film is null");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            String msg = "film update: film is null";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse(null, null, msg);
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         if (updatedFilm.getId() == null) {
-            log.error("film update: film id is null");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            String msg = "film update: film id is null";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse("id", null, msg);
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         Film film = filmService.update(updatedFilm);
         if (film == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            String msg = "film update: film not found";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse("id", updatedFilm.getId(), msg);
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(film, HttpStatus.OK);
     }
 
     @GetMapping
-    public ResponseEntity<List<Film>> getAllFilms() {
+    public ResponseEntity<?> getAllFilms() {
         List<Film> films = filmService.getAll();
+        if (films.isEmpty()) {
+            String msg = "film not found";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse(null, null, msg);
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(films, HttpStatus.OK);
     }
 }
