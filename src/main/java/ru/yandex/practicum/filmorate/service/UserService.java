@@ -14,7 +14,7 @@ public class UserService implements IBaseService<User> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<User> users = new ArrayList<>();
-    private Long id = 0L;
+    private long id;
 
 
     @Override

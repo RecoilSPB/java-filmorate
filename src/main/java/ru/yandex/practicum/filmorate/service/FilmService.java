@@ -14,7 +14,7 @@ public class FilmService implements IBaseService<Film> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final List<Film> films = new ArrayList<>();
-    private Long id;
+    private long id;
 
     @Override
     public Film add(Film film) {
