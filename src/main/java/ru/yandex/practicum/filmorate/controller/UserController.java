@@ -32,16 +32,23 @@ public class UserController {
     @PutMapping
     public ResponseEntity<?> updateUser(@Valid @RequestBody User updatedUser) {
         if (updatedUser == null) {
-            log.error("user update: user is null");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            String msg = "user update: user is null";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse(null, null, msg);
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         if (updatedUser.getId() == null) {
-            log.error("user update: user id is null");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            String msg = "user update: user id is null";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse(null, updatedUser, msg);
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         User user = userService.update(updatedUser);
         if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            String msg = "user update: user not found";
+            log.error(msg);
+            ErrorResponse error = new ErrorResponse(null, updatedUser, msg);
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

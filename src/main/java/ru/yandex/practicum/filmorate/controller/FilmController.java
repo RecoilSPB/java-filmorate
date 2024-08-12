@@ -40,14 +40,14 @@ public class FilmController {
         if (updatedFilm.getId() == null) {
             String msg = "film update: film id is null";
             log.error(msg);
-            ErrorResponse error = new ErrorResponse("id", null, msg);
+            ErrorResponse error = new ErrorResponse("id", updatedFilm, msg);
             return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
         }
         Film film = filmService.update(updatedFilm);
         if (film == null) {
             String msg = "film update: film not found";
             log.error(msg);
-            ErrorResponse error = new ErrorResponse("id", updatedFilm.getId(), msg);
+            ErrorResponse error = new ErrorResponse("id", updatedFilm, msg);
             return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(film, HttpStatus.OK);
