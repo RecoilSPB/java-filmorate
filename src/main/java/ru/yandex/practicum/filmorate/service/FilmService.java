@@ -1,47 +1,61 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FilmService implements IBaseService<Film> {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final List<Film> films = new ArrayList<>();
+    protected HashMap<Long, Film> films;
     private long id;
+
+    public FilmService() {
+        this.films = new HashMap<>();
+        this.id = 0;
+    }
 
     @Override
     public Film add(Film film) {
-        logger.debug("add Film...");
-        film.setId(getNextId());
-        films.add(film);
-        logger.debug("add Film id: {}", film.getId());
+        log.debug("add Film...");
+        Long nextId = getNextId();
+        film.setId(nextId);
+        films.put(nextId, film);
+        log.debug("add Film id: {}", film.getId());
         return film;
     }
 
     @Override
     public Film update(Film updateFilm) {
-        for (Film film : films) {
-            if (film.getId() == updateFilm.getId()) {
-                film.setName(updateFilm.getName());
-                film.setDescription(updateFilm.getDescription());
-                film.setReleaseDate(updateFilm.getReleaseDate());
-                film.setDuration(updateFilm.getDuration());
-                return film;
-            }
+        log.debug("update Film...");
+        if (updateFilm == null || updateFilm.getId() == null) {
+            String msg = "Invalid film data for update.";
+            throw new IllegalArgumentException(msg);
         }
-        return null;
+        if (films.isEmpty()) {
+            String msg = "Invalid film data for update.";
+            throw new IllegalArgumentException(msg);
+        }
+
+        if (films.containsKey(updateFilm.getId())) {
+            films.put(updateFilm.getId(), updateFilm);
+            return films.get(updateFilm.getId());
+        }
+        throw new FilmNotFoundException("Film not found with id: " + updateFilm.getId());
     }
 
     @Override
     public List<Film> getAll() {
-        return films;
+        if (films.isEmpty()) {
+            throw new FilmNotFoundException("No users found.");
+        }
+        return new ArrayList<>(films.values());
     }
 
     private Long getNextId() {

@@ -9,12 +9,11 @@ import java.time.LocalDate;
 public class User {
     private Long id;
 
-    @NotNull(message = "Электронная почта не может быть пустой")
+    @NotBlank(message = "Электронная почта не может быть пустой")
     @Email(message = "Электронная почта должна содержать символ @")
     private String email;
 
-    @NotBlank(message = "Логин не может быть пустым")
-    @Pattern(regexp = "\\S+", message = "Логин не может содержать пробелы")
+    @Pattern(regexp = "\\S+", message = "Логин не может быть пустым или содержать пробелы")
     private String login;
 
     private String name;
