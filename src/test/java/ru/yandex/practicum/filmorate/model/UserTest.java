@@ -1,16 +1,20 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@Slf4j
 class UserTest {
 
     @Test
@@ -51,11 +55,11 @@ class UserTest {
         try (ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory()) {
             Validator validator = validatorFactory.getValidator();
             var violations = validator.validate(user);
-            assertEquals(1, violations.stream()
-                    .toList().size(), "Валидация не выполнена");
+            List<ConstraintViolation<User>> violationList = violations.stream().toList();
+            log.debug("{}", violationList);
+            assertEquals(1, violationList.size(), "Валидация не выполнена");
             assertEquals("NotBlank",
-                    violations.stream()
-                            .toList()
+                    violationList
                             .getFirst()
                             .getConstraintDescriptor()
                             .getAnnotation().annotationType().getSimpleName(),
@@ -93,7 +97,7 @@ class UserTest {
             var violations = validator.validate(user);
             assertEquals(1, violations.stream()
                     .toList().size(), "Валидация не выполнена");
-            assertEquals("NotNull",
+            assertEquals("NotBlank",
                     violations.stream()
                             .toList()
                             .getFirst()
@@ -135,6 +139,6 @@ class UserTest {
         user.setLogin(login);
         user.setName(name);
         user.setBirthday(birthday);
-        return  user;
+        return user;
     }
 }
