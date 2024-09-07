@@ -31,6 +31,20 @@ public class UserController {
         return userService.update(updatedUser);
     }
 
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFried(@PathVariable("id") long userId,
+                         @PathVariable("friendId") long friendId) {
+        // Метод добавления друга
+        userService.addFried(userId, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void deleteFrieds(@PathVariable("id") long userId,
+                             @PathVariable("friendId") long friendId) {
+        // Метод удаления друга
+        userService.deleteFriend(userId, friendId);
+    }
+
     @GetMapping
     public Collection<User> getAllUsers() {
         log.info("Получен запрос на получение всех пользователей");
@@ -41,4 +55,18 @@ public class UserController {
     public User getById(@PathVariable("id") long userId) {
         return userService.getById(userId);
     }
+
+    @GetMapping("/users/{id}/friends")
+    public Collection<User> getFriends(@PathVariable("id") long userId) {
+        // Метод получения списка друзей
+        return userService.getAllFriends(userId);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public Collection<User> getCommonFriends(@PathVariable("id") long userId,
+                                             @PathVariable("otherId") long otherUserId) {
+        // Метод получения списка общих друзей
+        return userService.getCommonFriends(userId, otherUserId);
+    }
+
 }

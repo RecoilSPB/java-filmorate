@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.Collection;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -38,5 +39,63 @@ public class UserService {
             throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", id));
         }
         return user;
+    }
+
+    public void addFried(long userId, long friendId) {
+        log.info("UserService: addFriend user id = {}, friend id = {}", userId, friendId);
+        User user = userStorage.getById(userId);
+        User friend = userStorage.getById(friendId);
+        if (user == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        if (friend == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", friendId));
+        }
+        if (Objects.equals(userId, friendId)) {
+            throw new IllegalArgumentException("Ид друга совпадает с ид пользователя");
+        }
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
+    }
+
+    public void deleteFriend(long userId, long friendId) {
+        log.info("UserService: deleteFriend user id = {}, friend id = {}", userId, friendId);
+        User user = userStorage.getById(userId);
+        User friend = userStorage.getById(friendId);
+        if (user == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        if (friend == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", friendId));
+        }
+        user.getFriends().remove(friendId);
+        friend.getFriends().remove(userId);
+    }
+
+    public Collection<User> getAllFriends(Long userId) {
+        User user = userStorage.getById(userId);
+        if (user == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        return user.getFriends()
+                .stream()
+                .map(userStorage::getById)
+                .toList();
+    }
+
+    public Collection<User> getCommonFriends(Long userId, Long otherUserId) {
+        User user = userStorage.getById(userId);
+        User otherUser = userStorage.getById(otherUserId);
+        if (user == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        if (otherUser == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", otherUserId));
+        }
+        return user.getFriends()
+                .stream()
+                .filter(id -> otherUser.getFriends().contains(id))
+                .map(userStorage::getById)
+                .toList();
     }
 }
