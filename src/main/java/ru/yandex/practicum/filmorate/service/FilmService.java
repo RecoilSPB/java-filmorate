@@ -3,8 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
@@ -41,7 +40,7 @@ public class FilmService {
     public Film getById(long id) {
         Film film = filmStorage.getById(id);
         if (film == null) {
-            throw new FilmNotFoundException(String.format("Пользователь с ид %s не найден", id));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", id));
         }
         return film;
     }
@@ -51,10 +50,10 @@ public class FilmService {
         Film film = filmStorage.getById(filmId);
         User user = userStorage.getById(userId);
         if (film == null) {
-            throw new FilmNotFoundException(String.format("Фильм с ид %s не найден", filmId));
+            throw new NotFoundException(String.format("Фильм с ид %s не найден", filmId));
         }
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
         }
         film.getUserLikes().add(userId);
     }
@@ -64,10 +63,10 @@ public class FilmService {
         Film film = filmStorage.getById(filmId);
         User user = userStorage.getById(userId);
         if (film == null) {
-            throw new FilmNotFoundException(String.format("Фильм с ид %s не найден", filmId));
+            throw new NotFoundException(String.format("Фильм с ид %s не найден", filmId));
         }
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
         }
         film.getUserLikes().remove(userId);
     }

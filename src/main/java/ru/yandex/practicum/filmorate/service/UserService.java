@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -36,7 +36,7 @@ public class UserService {
     public User getById(long id) {
         User user = userStorage.getById(id);
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", id));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", id));
         }
         return user;
     }
@@ -46,10 +46,10 @@ public class UserService {
         User user = userStorage.getById(userId);
         User friend = userStorage.getById(friendId);
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
         }
         if (friend == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", friendId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", friendId));
         }
         if (Objects.equals(userId, friendId)) {
             throw new IllegalArgumentException("Ид друга совпадает с ид пользователя");
@@ -63,10 +63,10 @@ public class UserService {
         User user = userStorage.getById(userId);
         User friend = userStorage.getById(friendId);
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
         }
         if (friend == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", friendId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", friendId));
         }
         user.getFriends().remove(friendId);
         friend.getFriends().remove(userId);
@@ -75,7 +75,7 @@ public class UserService {
     public Collection<User> getAllFriends(Long userId) {
         User user = userStorage.getById(userId);
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
         }
         return user.getFriends()
                 .stream()
@@ -87,10 +87,10 @@ public class UserService {
         User user = userStorage.getById(userId);
         User otherUser = userStorage.getById(otherUserId);
         if (user == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
         }
         if (otherUser == null) {
-            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", otherUserId));
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", otherUserId));
         }
         return user.getFriends()
                 .stream()
