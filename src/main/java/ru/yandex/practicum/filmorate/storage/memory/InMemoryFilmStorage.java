@@ -5,13 +5,14 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    protected Map<Long, Film> films;
-    private long id;
+    protected Map<Long, Film> films = new HashMap<>();
+    private long id = 0;
+
+
 
     @Override
     public Film add(Film film) {
