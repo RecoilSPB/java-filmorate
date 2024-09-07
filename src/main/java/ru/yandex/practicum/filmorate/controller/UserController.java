@@ -31,14 +31,14 @@ public class UserController {
         return userService.update(updatedUser);
     }
 
-    @PutMapping("/users/{id}/friends/{friendId}")
+    @PutMapping("/{id}/friends/{friendId}")
     public void addFried(@PathVariable("id") long userId,
                          @PathVariable("friendId") long friendId) {
         // Метод добавления друга
         userService.addFried(userId, friendId);
     }
 
-    @DeleteMapping("/users/{id}/friends/{friendId}")
+    @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFrieds(@PathVariable("id") long userId,
                              @PathVariable("friendId") long friendId) {
         // Метод удаления друга
@@ -56,13 +56,14 @@ public class UserController {
         return userService.getById(userId);
     }
 
-    @GetMapping("/users/{id}/friends")
+    @GetMapping("/{id}/friends")
     public Collection<User> getFriends(@PathVariable("id") long userId) {
         // Метод получения списка друзей
+        log.info("Получен запрос на получение всех друзей");
         return userService.getAllFriends(userId);
     }
 
-    @GetMapping("/users/{id}/friends/common/{otherId}")
+    @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<User> getCommonFriends(@PathVariable("id") long userId,
                                              @PathVariable("otherId") long otherUserId) {
         // Метод получения списка общих друзей
