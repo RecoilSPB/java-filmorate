@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class ValidationException {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<List<ResponseException>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         List<ResponseException> errors = ex.getBindingResult()
                 .getFieldErrors()
@@ -28,14 +30,16 @@ public class ValidationException {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ResponseException> handleUserNotFoundException(UserNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ResponseException> handleUserNotFoundException(NotFoundException ex) {
         log.error("User not found exception: {}", ex.getMessage());
         ResponseException responseException = new ResponseException(null, null, ex.getMessage());
         return new ResponseEntity<>(responseException, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<ResponseException> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.error("Illegal argument exception: {}", ex.getMessage());
         ResponseException responseException = new ResponseException(null, null, ex.getMessage());
@@ -43,6 +47,7 @@ public class ValidationException {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ResponseException> handleGenericException(Exception ex) {
         log.error("Unexpected exception: {}", ex.getMessage());
         ResponseException responseException = new ResponseException(null, null, ex.getMessage());
