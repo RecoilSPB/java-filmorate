@@ -36,4 +36,9 @@ public class UserController {
         log.info("Получен запрос на получение всех пользователей");
         return userService.getAll();
     }
+
+    @GetMapping("/{id}")
+    public User getById(@PathVariable("id") long userId) {
+        return userService.getById(userId);
+    }
 }

@@ -36,4 +36,9 @@ public class FilmController {
         log.info("Получен запрос на получение всех фильмов");
         return filmService.getAll();
     }
+
+    @GetMapping("/{id}")
+    public Film getById(@PathVariable("id") long filmId) {
+        return filmService.getById(filmId);
+    }
 }
