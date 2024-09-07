@@ -4,16 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.util.Collection;
+import java.util.Comparator;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
+    private final UserService userStorage;
 
     public Film add(Film film) {
         log.debug("add Film id: {}", film.getId());
@@ -40,5 +44,40 @@ public class FilmService {
             throw new FilmNotFoundException(String.format("Пользователь с ид %s не найден", id));
         }
         return film;
+    }
+
+    public void addLike(long filmId, long userId) {
+        log.info("FilmService: addLike film id = {}, user id = {}", filmId, userId);
+        Film film = filmStorage.getById(filmId);
+        User user = userStorage.getById(userId);
+        if (film == null) {
+            throw new FilmNotFoundException(String.format("Фильм с ид %s не найден", filmId));
+        }
+        if (user == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        film.getUserLikes().add(userId);
+    }
+
+    public void removeLike(Long filmId, Long userId) {
+        log.info("FilmService: removeLike film id = {}, user id = {}", filmId, userId);
+        Film film = filmStorage.getById(filmId);
+        User user = userStorage.getById(userId);
+        if (film == null) {
+            throw new FilmNotFoundException(String.format("Фильм с ид %s не найден", filmId));
+        }
+        if (user == null) {
+            throw new UserNotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        film.getUserLikes().remove(userId);
+    }
+
+    public Collection<Film> getTopLikedFilms(long limit) {
+        return filmStorage.getAll()
+                .stream()
+                .sorted(Comparator.comparing(film -> film.getUserLikes().size(), Comparator.reverseOrder()))
+                .limit(limit)
+                .toList();
+
     }
 }

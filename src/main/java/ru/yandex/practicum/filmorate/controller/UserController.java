@@ -35,6 +35,7 @@ public class UserController {
     public void addFried(@PathVariable("id") long userId,
                          @PathVariable("friendId") long friendId) {
         // Метод добавления друга
+        log.info("Получен запрос на добавления друга");
         userService.addFried(userId, friendId);
     }
 
@@ -42,6 +43,7 @@ public class UserController {
     public void deleteFrieds(@PathVariable("id") long userId,
                              @PathVariable("friendId") long friendId) {
         // Метод удаления друга
+        log.info("Получен запрос на удаление друга");
         userService.deleteFriend(userId, friendId);
     }
 
@@ -53,6 +55,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getById(@PathVariable("id") long userId) {
+        log.info("Получен запрос на получение данных пользователя");
         return userService.getById(userId);
     }
 
@@ -67,6 +70,7 @@ public class UserController {
     public Collection<User> getCommonFriends(@PathVariable("id") long userId,
                                              @PathVariable("otherId") long otherUserId) {
         // Метод получения списка общих друзей
+        log.info("Получен запрос на получение общих друзей");
         return userService.getCommonFriends(userId, otherUserId);
     }
 
