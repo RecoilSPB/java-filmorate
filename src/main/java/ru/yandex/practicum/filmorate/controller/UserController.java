@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.List;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/users")
@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public Collection<User> getAllUsers() {
         log.info("Получен запрос на получение всех пользователей");
         return userService.getAll();
     }
