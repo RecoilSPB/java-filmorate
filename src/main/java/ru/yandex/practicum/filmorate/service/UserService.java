@@ -43,6 +43,9 @@ public class UserService {
 
     public void addFried(long userId, long friendId) {
         log.info("UserService: addFriend user id = {}, friend id = {}", userId, friendId);
+        if (Objects.equals(userId, friendId)) {
+            throw new IllegalArgumentException("Ид друга совпадает с ид пользователя");
+        }
         User user = userStorage.getById(userId);
         User friend = userStorage.getById(friendId);
         if (user == null) {
@@ -50,9 +53,6 @@ public class UserService {
         }
         if (friend == null) {
             throw new NotFoundException(String.format("Пользователь с ид %s не найден", friendId));
-        }
-        if (Objects.equals(userId, friendId)) {
-            throw new IllegalArgumentException("Ид друга совпадает с ид пользователя");
         }
         user.getFriends().add(friendId);
         friend.getFriends().add(userId);
