@@ -1,65 +1,82 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collection;
+import java.util.Comparator;
 
 @Service
 @Slf4j
-public class FilmService implements IBaseService<Film> {
+@RequiredArgsConstructor
+public class FilmService {
+    private final FilmStorage filmStorage;
+    private final UserService userStorage;
 
-    protected HashMap<Long, Film> films;
-    private long id;
-
-    public FilmService() {
-        this.films = new HashMap<>();
-        this.id = 0;
-    }
-
-    @Override
     public Film add(Film film) {
-        log.debug("add Film...");
-        Long nextId = getNextId();
-        film.setId(nextId);
-        films.put(nextId, film);
         log.debug("add Film id: {}", film.getId());
-        return film;
+        return filmStorage.add(film);
     }
 
-    @Override
     public Film update(Film updateFilm) {
         log.debug("update Film...");
         if (updateFilm == null || updateFilm.getId() == null) {
             String msg = "Invalid film data for update.";
             throw new IllegalArgumentException(msg);
         }
-        if (films.isEmpty()) {
-            String msg = "Invalid film data for update.";
-            throw new IllegalArgumentException(msg);
-        }
+        return filmStorage.update(updateFilm);
 
-        if (films.containsKey(updateFilm.getId())) {
-            films.put(updateFilm.getId(), updateFilm);
-            return films.get(updateFilm.getId());
-        }
-        throw new FilmNotFoundException("Film not found with id: " + updateFilm.getId());
     }
 
-    @Override
-    public List<Film> getAll() {
-        if (films.isEmpty()) {
-            throw new FilmNotFoundException("No users found.");
-        }
-        return new ArrayList<>(films.values());
+    public Collection<Film> getAll() {
+        return filmStorage.getAll();
     }
 
-    private Long getNextId() {
-        this.id++;
-        return this.id;
+    public Film getById(long id) {
+        Film film = filmStorage.getById(id);
+        if (film == null) {
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", id));
+        }
+        return film;
+    }
+
+    public void addLike(long filmId, long userId) {
+        log.info("FilmService: addLike film id = {}, user id = {}", filmId, userId);
+        Film film = filmStorage.getById(filmId);
+        User user = userStorage.getById(userId);
+        if (film == null) {
+            throw new NotFoundException(String.format("Фильм с ид %s не найден", filmId));
+        }
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        film.getUserLikes().add(userId);
+    }
+
+    public void removeLike(Long filmId, Long userId) {
+        log.info("FilmService: removeLike film id = {}, user id = {}", filmId, userId);
+        Film film = filmStorage.getById(filmId);
+        User user = userStorage.getById(userId);
+        if (film == null) {
+            throw new NotFoundException(String.format("Фильм с ид %s не найден", filmId));
+        }
+        if (user == null) {
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", userId));
+        }
+        film.getUserLikes().remove(userId);
+    }
+
+    public Collection<Film> getTopLikedFilms(long limit) {
+        return filmStorage.getAll()
+                .stream()
+                .sorted(Comparator.comparing(film -> film.getUserLikes().size(), Comparator.reverseOrder()))
+                .limit(limit)
+                .toList();
+
     }
 }
