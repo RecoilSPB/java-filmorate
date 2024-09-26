@@ -3,15 +3,17 @@ package ru.yandex.practicum.filmorate.storage.memory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
     protected Map<Long, Film> films = new HashMap<>();
     private long id = 0;
-
 
 
     @Override
@@ -53,8 +55,22 @@ public class InMemoryFilmStorage implements FilmStorage {
         return films.get(id);
     }
 
+    @Override
+    public void delete(Long id) {
+        films.remove(id);
+    }
+
+    @Override
+    public void addLike(Film film, User user) {
+        film.getUserLikes().add(user.getId());
+    }
+
+    @Override
+    public void removeLike(Long filmId, Long userId) {
+        films.get(filmId).getUserLikes().remove(userId);
+    }
+
     private Long getNextId() {
-        this.id++;
-        return this.id;
+        return ++this.id;
     }
 }

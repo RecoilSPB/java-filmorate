@@ -7,7 +7,7 @@ CREATE TABLE "film" (
     "description" varchar,
     "releaseDate" date,
     "duration" integer,
-    "mpa_rating" varchar CHECK ("mpa_rating" IN ('G', 'PG', 'PG-13', 'R', 'NC-17'))
+    "mpa_rating" varchar CHECK ("mpa_rating" IN ('G', 'PG', 'PG13', 'R', 'NC17'))
 );
 
 CREATE TABLE "genre" (

@@ -4,9 +4,9 @@
 CREATE TYPE "mpa_rating" AS ENUM (
 'G',
 'PG',
-'PG-13',
+'PG13',
 'R',
-'NC-17'
+'NC17'
 );
 
 CREATE TYPE "friend_status" AS ENUM (

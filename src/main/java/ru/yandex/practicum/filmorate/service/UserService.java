@@ -26,6 +26,14 @@ public class UserService {
             String msg = "Invalid user data for update.";
             throw new IllegalArgumentException(msg);
         }
+        User oldUser = userStorage.getById(updatedUser.getId());
+        if (oldUser == null) {
+            throw new NotFoundException(String.format("Пользователь с ид %s не найден", updatedUser.getId()));
+        }
+//        User existUser = userStorage.getByEmail(updatedUser.getEmail());
+//        if (existUser != null && !Objects.equals(updatedUser.getId(), existUser.getId())) {
+//            throw new DublicateException(String.format("Пользователь с email %s уже существует", updatedUser.getEmail()));
+//        }
         return userStorage.update(updatedUser);
     }
 
@@ -54,8 +62,10 @@ public class UserService {
         if (friend == null) {
             throw new NotFoundException(String.format("Пользователь с ид %s не найден", friendId));
         }
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        if (user.getFriends().contains(friend.getId())) {
+            throw new IllegalArgumentException("Пользователь уже добавлен в список друзей");
+        }
+        userStorage.addFriend(user, friend);
     }
 
     public void deleteFriend(long userId, long friendId) {
@@ -68,8 +78,7 @@ public class UserService {
         if (friend == null) {
             throw new NotFoundException(String.format("Пользователь с ид %s не найден", friendId));
         }
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
+        userStorage.deleteFriend(userId, friendId);
     }
 
     public Collection<User> getAllFriends(Long userId) {
