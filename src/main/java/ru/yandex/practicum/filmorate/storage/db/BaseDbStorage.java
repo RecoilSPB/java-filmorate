@@ -19,10 +19,14 @@ public class BaseDbStorage<T> {
     @SuppressWarnings("unused")
     private final Class<T> entityType;
 
-    protected Optional<T> findOne(String query, Object... params) {
+    private static void validateQuery(String query) {
         if (query == null || query.trim().isEmpty()) {
             throw new IllegalArgumentException("Query must not be null or empty");
         }
+    }
+
+    protected Optional<T> findOne(String query, Object... params) {
+        validateQuery(query);
         try {
             T result = jdbc.queryForObject(query, mapper, params);
             return Optional.ofNullable(result);
@@ -32,32 +36,24 @@ public class BaseDbStorage<T> {
     }
 
     protected List<T> findMany(String query, Object... params) {
-        if (query == null || query.trim().isEmpty()) {
-            throw new IllegalArgumentException("Query must not be null or empty");
-        }
+        validateQuery(query);
         return jdbc.query(query, mapper, params);
     }
 
     public boolean delete(String query, long id) {
-        if (query == null || query.trim().isEmpty()) {
-            throw new IllegalArgumentException("Query must not be null or empty");
-        }
+        validateQuery(query);
         int rowsDeleted = jdbc.update(query, id);
         return rowsDeleted > 0;
     }
 
     public boolean delete(String query, long id, long id2) {
-        if (query == null || query.trim().isEmpty()) {
-            throw new IllegalArgumentException("Query must not be null or empty");
-        }
+        validateQuery(query);
         int rowsDeleted = jdbc.update(query, id, id2);
         return rowsDeleted > 0;
     }
 
     protected Long insert(String query, Object... params) {
-        if (query == null || query.trim().isEmpty()) {
-            throw new IllegalArgumentException("Query must not be null or empty");
-        }
+        validateQuery(query);
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         jdbc.update(connection -> {
             PreparedStatement ps = connection
@@ -77,9 +73,7 @@ public class BaseDbStorage<T> {
     }
 
     protected void update(String query, Object... params) {
-        if (query == null || query.trim().isEmpty()) {
-            throw new IllegalArgumentException("Query must not be null or empty");
-        }
+        validateQuery(query);
         int rowsUpdated = jdbc.update(query, params);
         if (rowsUpdated == 0) {
             throw new InternalServerException("Не удалось обновить данные");
