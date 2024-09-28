@@ -3,24 +3,23 @@ package ru.yandex.practicum.filmorate.storage.db.dml;
 public class DmlFilm {
     public static final String FIND_ALL_QUERY = """
             SELECT f.*,
-                   (SELECT Listagg(fg.genre_id, ',')
-                      FROM film_genre fg
-                     WHERE fg.film_id = f.id) as genres,
-                   (SELECT Listagg(fl.user_id, ',')
-                      FROM film_like fl
-                     WHERE fl.film_id = f.id) as likes
+                   LISTAGG(DISTINCT fg.genre_id, ',') AS genres,
+                   LISTAGG(DISTINCT fl.user_id, ',') AS likes
               FROM film f
+              LEFT JOIN film_genre fg ON fg.film_id = f.id
+              LEFT JOIN film_like fl ON fl.film_id = f.id
+            GROUP BY f.id
             """;
 
     public static final String FIND_BY_ID_QUERY = """
             SELECT f.*,
-                   (SELECT Listagg(fg.genre_id, ',')
-                      FROM film_genre fg
-                     WHERE fg.film_id = f.id) as genres,
-                   (SELECT Listagg(fl.user_id, ',')
-                      FROM film_like fl
-                     WHERE fl.film_id = f.id) as likes
-            FROM film f WHERE f.id = ?
+                   LISTAGG(DISTINCT fg.genre_id, ',') AS genres,
+                   LISTAGG(DISTINCT fl.user_id, ',') AS likes
+              FROM film f
+              LEFT JOIN film_genre fg ON fg.film_id = f.id
+              LEFT JOIN film_like fl ON fl.film_id = f.id
+             WHERE f.id = ?
+            GROUP BY f.id
             """;
 
     public static final String INSERT_QUERY = """

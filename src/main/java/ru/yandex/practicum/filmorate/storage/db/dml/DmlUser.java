@@ -3,28 +3,28 @@ package ru.yandex.practicum.filmorate.storage.db.dml;
 public class DmlUser {
     public static final String FIND_ALL_QUERY = """
             SELECT u.*,
-                   (SELECT Listagg(uf.friend_id, ',')
-                      FROM user_friend uf
-                     WHERE uf.user_id = u.id) as friends
+                   LISTAGG(DISTINCT uf.friend_id, ',') AS friends
               FROM usr u
+              LEFT JOIN user_friend uf ON uf.user_id = u.id
+            GROUP BY u.id
             """;
 
     public static final String FIND_BY_ID_QUERY = """
             SELECT u.*,
-                   (SELECT Listagg(uf.friend_id, ',')
-                      FROM user_friend uf
-                     WHERE uf.user_id = u.id) as friends
+                   LISTAGG(DISTINCT uf.friend_id, ',') AS friends
               FROM usr u
+              LEFT JOIN user_friend uf ON uf.user_id = u.id
              WHERE u.id = ?
+            GROUP BY u.id
             """;
 
     public static final String FIND_BY_EMAIL_QUERY = """
             SELECT u.*,
-                   (SELECT Listagg(uf.friend_id, ',')
-                      FROM user_friend uf
-                     WHERE uf.user_id = u.id) as friends
+                   LISTAGG(DISTINCT uf.friend_id, ',') AS friends
               FROM usr u
+              LEFT JOIN user_friend uf ON uf.user_id = u.id
              WHERE LOWER(u.email) = LOWER(?)
+            GROUP BY u.id
             """;
 
     public static final String INSERT_QUERY = """
