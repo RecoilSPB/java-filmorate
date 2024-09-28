@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.DublicateException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -30,10 +31,10 @@ public class UserService {
         if (oldUser == null) {
             throw new NotFoundException(String.format("Пользователь с ид %s не найден", updatedUser.getId()));
         }
-//        User existUser = userStorage.getByEmail(updatedUser.getEmail());
-//        if (existUser != null && !Objects.equals(updatedUser.getId(), existUser.getId())) {
-//            throw new DublicateException(String.format("Пользователь с email %s уже существует", updatedUser.getEmail()));
-//        }
+        User existUser = userStorage.getByEmail(updatedUser.getEmail());
+        if (existUser != null && !Objects.equals(updatedUser.getId(), existUser.getId())) {
+            throw new DublicateException(String.format("Пользователь с email %s уже существует", updatedUser.getEmail()));
+        }
         return userStorage.update(updatedUser);
     }
 
