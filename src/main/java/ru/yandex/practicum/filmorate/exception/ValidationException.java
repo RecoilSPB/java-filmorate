@@ -38,6 +38,14 @@ public class ValidationException {
         return new ResponseEntity<>(responseException, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ResponseException> handleWrongArgumentException(final WrongArgumentException ex) {
+        log.error("handleWrongArgumentException: {}", ex.getMessage());
+        ResponseException responseException = new ResponseException(null, null, ex.getMessage());
+        return new ResponseEntity<>(responseException, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ResponseEntity<ResponseException> handleIllegalArgumentException(IllegalArgumentException ex) {

@@ -12,4 +12,12 @@ public interface UserStorage {
     Collection<User> getAll();
 
     User getById(long id);
+
+    User getByEmail(String email);
+
+    void delete(Long id);
+
+    void addFriend(User user, User friend);
+
+    void deleteFriend(Long userId, Long friendId);
 }
